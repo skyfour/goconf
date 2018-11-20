@@ -7,6 +7,9 @@ This program help your program find the real location of your config file if you
 The recommended position of the config file is under the root of your source code.
 When you deploy executables the config file should be along with the executables.
 
+
+supports both yaml and ini config files
+
 ## usage
 
 ### get
