@@ -22,42 +22,39 @@ func getParentDirectory(directory string) string {
 }
 
 // get config file from where the source code lies
-func getConfigFileFromSrc(fileName string) *os.File {
-	if _, fileNameWithPath, _, ok := runtime.Caller(0); ok {
-		dir := path.Dir(fileNameWithPath)
-		f, err := os.Open(path.Join(dir, fileName))
-		// change to the dir that contains the source code
-		os.Chdir(dir)
-		reachRoot := false
-		for err != nil {
-			os.Chdir("..")
-			dir = getParentDirectory(dir)
-			if strings.EqualFold(runtime.GOOS, "windows") {
-				// windows
-				if len(dir) < 3 {
-					// like C:  or D:
-					reachRoot = true
-				}
-			} else {
-				// osx or linux
-				if len(dir) < 2 {
-					// like /
-					reachRoot = true
-				}
+func getConfigFileFromSrc(fileName, srcDir string) *os.File {
+	dir := path.Dir(srcDir)
+	f, err := os.Open(path.Join(dir, fileName))
+	// change to the dir that contains the source code
+	os.Chdir(dir)
+	reachRoot := false
+	for err != nil {
+		os.Chdir("..")
+		dir = getParentDirectory(dir)
+		if strings.EqualFold(runtime.GOOS, "windows") {
+			// windows
+			if len(dir) < 3 {
+				// like C:  or D:
+				reachRoot = true
 			}
-			f, err = os.Open(path.Join(dir, fileName))
-			// find to the root of all dirs
-			if reachRoot {
-				if err != nil {
-					return nil
-				}
-				return f
+		} else {
+			// osx or linux
+			if len(dir) < 2 {
+				// like /
+				reachRoot = true
 			}
 		}
-		// return found file
-		return f
+		f, err = os.Open(path.Join(dir, fileName))
+		// find to the root of all dirs
+		if reachRoot {
+			if err != nil {
+				return nil
+			}
+			return f
+		}
 	}
-	return nil
+	// return found file
+	return f
 }
 
 // get config file from where the executables lies
@@ -78,7 +75,9 @@ func getConfigFileFromExecutable(fileName string) *os.File {
 func ReadConfigFile(fileName string) []byte {
 	f := getConfigFileFromExecutable(fileName)
 	if f == nil {
-		f = getConfigFileFromSrc(fileName)
+		if _, fileNameWithPath, _, ok := runtime.Caller(1); ok {
+			f = getConfigFileFromSrc(fileName, fileNameWithPath)
+		}
 	}
 	if f == nil {
 		return nil
