@@ -72,12 +72,10 @@ func getConfigFileFromExecutable(fileName string) *os.File {
 
 // read config file first from where the executable file lies
 // then where the source code lies, or it's parent directory recursively
-func ReadConfigFile(fileName string) []byte {
+func ReadConfigFile(fileName, srcFile string) []byte {
 	f := getConfigFileFromExecutable(fileName)
 	if f == nil {
-		if _, fileNameWithPath, _, ok := runtime.Caller(1); ok {
-			f = getConfigFileFromSrc(fileName, fileNameWithPath)
-		}
+		f = getConfigFileFromSrc(fileName, srcFile)
 	}
 	if f == nil {
 		return nil

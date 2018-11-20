@@ -7,11 +7,16 @@ import (
 	"errors"
 	"gopkg.in/ini.v1"
 	"gopkg.in/yaml.v2"
+	"runtime"
 )
 
 // yaml config file to an object
-func Yaml2Object(fileName string, object interface{}) error{
-	d := ReadConfigFile(fileName)
+func Yaml2Object(fileName string, object interface{}) error {
+	var srcDir = "."
+	if _, fileNameWithPath, _, ok := runtime.Caller(1); ok {
+		srcDir = fileNameWithPath
+	}
+	d := ReadConfigFile(fileName, srcDir)
 	if d == nil {
 		return errors.New("the specified file cannot be found")
 	}
@@ -20,8 +25,11 @@ func Yaml2Object(fileName string, object interface{}) error{
 
 // ini config to object
 func Ini2Object(fileName string, object interface{}) error {
-
-	d := ReadConfigFile(fileName)
+	var srcDir = "."
+	if _, fileNameWithPath, _, ok := runtime.Caller(1); ok {
+		srcDir = fileNameWithPath
+	}
+	d := ReadConfigFile(fileName, srcDir)
 	if d == nil {
 		return errors.New("the specified file cannot be found")
 	}

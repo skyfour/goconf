@@ -1,13 +1,18 @@
 package goconf
 
-import "testing"
+import (
+	"runtime"
+	"testing"
+)
 
 const testFileName  = "readme.md"
 
 // read config file
 func TestReadConfigFile(t *testing.T) {
-	d := ReadConfigFile(testFileName)
-	if d == nil {
-		t.FailNow()
+	if _, fileNameWithPath, _, ok := runtime.Caller(1); ok {
+		d := ReadConfigFile(testFileName, fileNameWithPath)
+		if d == nil {
+			t.FailNow()
+		}
 	}
 }
