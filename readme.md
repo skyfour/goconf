@@ -1,4 +1,10 @@
 # goconf
+
+
+## Caution! this repo is no longer maintained
+It will be deleted after 3 months. It was moved here:
+[go-commons](https://github.com/winjeg/go-commons)
+
 goconf is a package for reading config file for golang projects.
 in many cases when you need a config file to do some config, but your program or your unit tests 
 can't read the config file correctly, because where to put the config file really sucks.
